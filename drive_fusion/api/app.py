@@ -7,6 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from drive_fusion.core.service import DriveFusionService
+from drive_fusion.auth.routes import router as auth_router
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -15,6 +16,7 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
 service = DriveFusionService()
+app.include_router(auth_router)
 
 
 @app.get("/api/health")
