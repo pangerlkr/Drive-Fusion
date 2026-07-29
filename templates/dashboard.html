@@ -52,9 +52,26 @@
     <section class="card">
       <h2>Transfer queue</h2>
       <table>
-        <tr><th>Job</th><th>From</th><th>To</th><th>Status</th></tr>
+        <tr><th>Job</th><th>From</th><th>To</th><th>Status</th><th>Results</th><th>Actions</th></tr>
         {% for j in jobs %}
-        <tr><td>{{ j.id }}</td><td>{{ j.source_account }}</td><td>{{ j.target_account }}</td><td>{{ j.status }}</td></tr>
+        <tr>
+          <td>{{ j.id }}</td>
+          <td>{{ j.source_account }}</td>
+          <td>{{ j.target_account }}</td>
+          <td>{{ j.status }}</td>
+          <td>
+            {% for r in j.results %}
+              {{ r.file_id }}: {{ r.status }}{% if r.error %} ({{ r.error }}){% endif %}<br>
+            {% endfor %}
+          </td>
+          <td>
+            {% if j.status == "failed" %}
+            <form method="post" action="/ui/jobs/{{ j.id }}/retry" style="display:inline">
+              <button type="submit">Retry failed</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
         {% endfor %}
       </table>
       <form method="post" action="/ui/jobs">
