@@ -60,6 +60,15 @@ def api_create_job(
     return service.create_transfer_job(source_account, target_account, ids, note or None)
 
 
+@app.post("/api/jobs/{job_id}/retry")
+def api_retry_job(job_id: str):
+    """Retry only the failed files from a previous transfer job."""
+    try:
+        return service.retry_job(job_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
+
 @app.post("/api/accounts/{account_id}/sync")
 def api_sync_account(account_id: str):
     """Pull live quota and file metadata from Google Drive for one account."""
@@ -102,6 +111,15 @@ def ui_create_job(
 ):
     ids = [f.strip() for f in file_ids.split(",") if f.strip()]
     service.create_transfer_job(source_account, target_account, ids, note or None)
+    return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/ui/jobs/{job_id}/retry")
+def ui_retry_job(job_id: str):
+    try:
+        service.retry_job(job_id)
+    except ValueError:
+        pass
     return RedirectResponse(url="/", status_code=303)
 
 
