@@ -2,7 +2,9 @@
 import uuid
 from typing import Optional
 
+from drive_fusion.core import drive_client
 from drive_fusion.core.store import load_state, save_state
+from drive_fusion.auth.token_store import load_credentials
 
 
 class DriveFusionService:
@@ -63,6 +65,47 @@ class DriveFusionService:
         self.state["jobs"].append(job)
         self._persist()
         return job
+
+    def sync_account(self, account_id: str) -> dict:
+        """Refresh quota and file metadata for one account from the live
+        Google Drive API, using the OAuth credentials saved for that
+        account's user id. Falls back to a clear error if the account
+        has not completed the OAuth flow yet.
+        """
+        account = next((a for a in self.state["accounts"] if a["id"] == account_id), None)
+        if not account:
+            raise ValueError(f"Unknown account: {account_id}")
+
+        creds = load_credentials(account_id)
+        if not creds:
+            raise ValueError(
+                f"Account {account_id} is not connected via Google OAuth. "
+                "Visit /auth/login?user_id=" + account_id + " first."
+            )
+
+        quota = drive_client.fetch_quota(creds)
+        account["used_gb"] = quota["used_gb"]
+        account["total_gb"] = quota["total_gb"]
+
+        live_files = drive_client.fetch_files(creds, account_id)
+        self.state["files"] = [
+            f for f in self.state["files"] if f["account_id"] != account_id
+        ] + live_files
+
+        self._persist()
+        return {"account": account, "file_count": len(live_files)}
+
+    def sync_all_accounts(self) -> list[dict]:
+        """Sync every connected account, skipping any that aren't
+        authorized yet. Returns per-account sync results/errors.
+        """
+        results = []
+        for account in self.state["accounts"]:
+            try:
+                results.append({"account_id": account["id"], **self.sync_account(account["id"])})
+            except ValueError as exc:
+                results.append({"account_id": account["id"], "error": str(exc)})
+        return results
 
     def export_report(self) -> str:
         summary = self.usage_summary()
