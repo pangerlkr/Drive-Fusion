@@ -190,16 +190,17 @@ See `RUNNING.md` for the same instructions in a quick-reference format.
 | Phase 2 | Functional core, CLI, GUI | Done — shared service layer, Typer CLI, FastAPI dashboard |
 | Phase 3 | Authentication | Done — live Google OAuth multi-account connection flow (`drive_fusion/auth`) |
 | Phase 4 | Live indexing | Done — real Drive API metadata sync and quota reads via `drive_client.py` and `/api/.../sync` |
-| Phase 5 | Transfer workflows | Planned — real copy jobs, retries, progress tracking |
+| Phase 5 | Transfer workflows | Done — real Drive API copy jobs via `drive_client.copy_file_between_accounts`, per-file status, retry endpoint |
 | Phase 6 | Hardening | Planned — security review, deployment, telemetry |
 
-## Next milestone: real transfer workflows
+## Next milestone: hardening and deployment
 
-Accounts can now be connected with live Google OAuth, and quota/file metadata can be synced from the real Drive API. The next milestone replaces the simulated transfer jobs with:
+Accounts can be connected with live Google OAuth, quota/file metadata can be synced from the real Drive API, and transfer jobs copy files for real between connected accounts (with per-file status, error surfacing, and a retry endpoint for failed files). The next milestone focuses on:
 
-- Real Drive API copy/move operations between connected accounts
-- Background job execution with retries and progress tracking
-- Webhook or polling-based job status updates in the GUI
+- Background/async job execution so large transfers don't block the request
+- Moving state from a local JSON file to PostgreSQL or SQLite
+- Security review of the token store and OAuth flow ahead of any public deployment
+- Deployment to Netlify (frontend) and Render (backend API)
 
 ## Contributing
 
