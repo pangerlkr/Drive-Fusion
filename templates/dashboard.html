@@ -17,14 +17,28 @@
       <p>Free: {{ summary.free_gb }} GB</p>
       <p>Utilization: {{ summary.utilization_pct }}%</p>
       <p>Accounts connected: {{ summary.account_count }}</p>
+      <form method="post" action="/ui/sync">
+        <button type="submit">Sync all accounts</button>
+      </form>
     </section>
 
     <section class="card">
       <h2>Connected accounts</h2>
       <table>
-        <tr><th>Name</th><th>Email</th><th>Used</th><th>Total</th></tr>
+        <tr><th>Name</th><th>Email</th><th>Used</th><th>Total</th><th>Actions</th></tr>
         {% for a in accounts %}
-        <tr><td>{{ a.name }}</td><td>{{ a.email }}</td><td>{{ a.used_gb }} GB</td><td>{{ a.total_gb }} GB</td></tr>
+        <tr>
+          <td>{{ a.name }}</td>
+          <td>{{ a.email }}</td>
+          <td>{{ a.used_gb }} GB</td>
+          <td>{{ a.total_gb }} GB</td>
+          <td>
+            <a href="/auth/login?user_id={{ a.id }}">Connect</a>
+            <form method="post" action="/ui/accounts/{{ a.id }}/sync" style="display:inline">
+              <button type="submit">Sync</button>
+            </form>
+          </td>
+        </tr>
         {% endfor %}
       </table>
       <form method="post" action="/ui/accounts">
