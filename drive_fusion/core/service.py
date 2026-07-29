@@ -54,17 +54,79 @@ class DriveFusionService:
         return self.state["jobs"]
 
     def create_transfer_job(self, source_account: str, target_account: str, file_ids: list[str], note: Optional[str] = None):
+        """Queue and immediately attempt a transfer job.
+
+        If both accounts have completed Google OAuth, files are copied for
+        real via the Drive API (downloaded from the source account and
+        re-uploaded to the target account). If either account lacks live
+        credentials, the job is recorded with status "simulated" so the
+        prototype workflow still works without live OAuth.
+        """
         job = {
             "id": f"job-{uuid.uuid4().hex[:8]}",
             "source_account": source_account,
             "target_account": target_account,
             "file_ids": file_ids,
             "note": note,
-            "status": "completed",
+            "status": "pending",
+            "results": [],
         }
         self.state["jobs"].append(job)
+        self._run_transfer_job(job)
         self._persist()
         return job
+
+    def _run_transfer_job(self, job: dict) -> None:
+        source_creds = load_credentials(job["source_account"])
+        target_creds = load_credentials(job["target_account"])
+
+        if not source_creds or not target_creds:
+            job["status"] = "simulated"
+            job["results"] = [
+                {"file_id": fid, "status": "simulated"} for fid in job["file_ids"]
+            ]
+            return
+
+        results = []
+        all_ok = True
+        for file_id in job["file_ids"]:
+            try:
+                copied = drive_client.copy_file_between_accounts(
+                    source_creds, target_creds, file_id
+                )
+                copied["account_id"] = job["target_account"]
+                self.state["files"].append(copied)
+                results.append({"file_id": file_id, "status": "completed", "new_file_id": copied["id"]})
+            except Exception as exc:  # noqa: BLE001 - surface any Drive API error per file
+                all_ok = False
+                results.append({"file_id": file_id, "status": "failed", "error": str(exc)})
+
+        job["results"] = results
+        job["status"] = "completed" if all_ok else "failed"
+
+    def retry_job(self, job_id: str) -> dict:
+        """Retry only the failed files from a previous transfer job."""
+        job = next((j for j in self.state["jobs"] if j["id"] == job_id), None)
+        if not job:
+            raise ValueError(f"Unknown job: {job_id}")
+        failed_ids = [
+            r["file_id"] for r in job.get("results", []) if r.get("status") == "failed"
+        ]
+        if not failed_ids:
+            return job
+        retry_job_record = {
+            "id": f"job-{uuid.uuid4().hex[:8]}",
+            "source_account": job["source_account"],
+            "target_account": job["target_account"],
+            "file_ids": failed_ids,
+            "note": f"Retry of {job_id}",
+            "status": "pending",
+            "results": [],
+        }
+        self.state["jobs"].append(retry_job_record)
+        self._run_transfer_job(retry_job_record)
+        self._persist()
+        return retry_job_record
 
     def sync_account(self, account_id: str) -> dict:
         """Refresh quota and file metadata for one account from the live
@@ -75,23 +137,19 @@ class DriveFusionService:
         account = next((a for a in self.state["accounts"] if a["id"] == account_id), None)
         if not account:
             raise ValueError(f"Unknown account: {account_id}")
-
         creds = load_credentials(account_id)
         if not creds:
             raise ValueError(
                 f"Account {account_id} is not connected via Google OAuth. "
                 "Visit /auth/login?user_id=" + account_id + " first."
             )
-
         quota = drive_client.fetch_quota(creds)
         account["used_gb"] = quota["used_gb"]
         account["total_gb"] = quota["total_gb"]
-
         live_files = drive_client.fetch_files(creds, account_id)
         self.state["files"] = [
             f for f in self.state["files"] if f["account_id"] != account_id
         ] + live_files
-
         self._persist()
         return {"account": account, "file_count": len(live_files)}
 
