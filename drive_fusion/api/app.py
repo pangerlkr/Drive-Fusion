@@ -1,7 +1,7 @@
 """FastAPI backend and dashboard for Drive Fusion."""
 import os
 
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, HTTPException, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -60,6 +60,21 @@ def api_create_job(
     return service.create_transfer_job(source_account, target_account, ids, note or None)
 
 
+@app.post("/api/accounts/{account_id}/sync")
+def api_sync_account(account_id: str):
+    """Pull live quota and file metadata from Google Drive for one account."""
+    try:
+        return service.sync_account(account_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@app.post("/api/sync")
+def api_sync_all():
+    """Sync every connected account from the live Google Drive API."""
+    return service.sync_all_accounts()
+
+
 @app.get("/")
 def dashboard(request: Request):
     context = {
@@ -87,4 +102,13 @@ def ui_create_job(
 ):
     ids = [f.strip() for f in file_ids.split(",") if f.strip()]
     service.create_transfer_job(source_account, target_account, ids, note or None)
+    return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/ui/accounts/{account_id}/sync")
+def ui_sync_account(account_id: str):
+    try:
+        service.sync_account(account_id)
+    except ValueError:
+        pass
     return RedirectResponse(url="/", status_code=303)
