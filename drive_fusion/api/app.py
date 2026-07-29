@@ -112,3 +112,10 @@ def ui_sync_account(account_id: str):
     except ValueError:
         pass
     return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/ui/sync")
+def ui_sync_all():
+    """Sync every connected account and return to the dashboard."""
+    service.sync_all_accounts()
+    return RedirectResponse(url="/", status_code=303)
