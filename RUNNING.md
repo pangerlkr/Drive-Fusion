@@ -16,7 +16,7 @@ Copy `.env.example` to `.env` and fill in your Google OAuth credentials:
 cp .env.example .env
 ```
 
-Required variables: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `TOKEN_STORE_DIR`. Create OAuth credentials in the Google Cloud Console with the Drive API enabled and the redirect URI registered.
+Required variables: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `TOKEN_STORE_DIR`. Create OAuth credentials in the Google Cloud Console with the Drive API enabled and the redirect URI registered. Set `ALLOWED_ORIGINS` (comma-separated) to the frontend origin(s) allowed to call this API via CORS.
 
 ## CLI usage
 
