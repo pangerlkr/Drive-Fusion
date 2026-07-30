@@ -5,6 +5,7 @@ from fastapi import FastAPI, HTTPException, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.middleware.cors import CORSMiddleware
 
 from drive_fusion.core.service import DriveFusionService
 from drive_fusion.auth.routes import router as auth_router
@@ -12,6 +13,15 @@ from drive_fusion.auth.routes import router as auth_router
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 app = FastAPI(title="Drive Fusion")
+
+ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "http://127.0.0.1:8000,http://localhost:8000").split(",") if o.strip()]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 
