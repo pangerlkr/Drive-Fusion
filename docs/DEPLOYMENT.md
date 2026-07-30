@@ -36,3 +36,28 @@ The goal is to create a professional workspace that lets a user connect multiple
 - Changing how Google allocates quota to a single account.[2]
 - Bypassing Google storage policies or terms.
 - Silent account linking without user authorization.[1][3]
+
+## Deployment
+
+Drive Fusion targets a split deployment: a static/Jinja2 frontend and a FastAPI backend API, with persistent storage for state and OAuth tokens.
+
+### Frontend (Netlify)
+
+- Build/publish the `templates/` and `static/` assets, or migrate to a React build, and deploy the output directory to Netlify.
+- Configure Netlify environment variables to point API calls at the deployed backend URL (Render).
+- Set up a `_redirects` or `netlify.toml` rewrite so frontend routes proxy `/api/*` and `/auth/*` calls to the Render backend.
+
+### Backend (Render)
+
+- Deploy `drive_fusion.api.app:app` as a Render Web Service running `uvicorn drive_fusion.api.app:app --host 0.0.0.0 --port $PORT`.
+- Set required environment variables in the Render dashboard: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` (pointing at the Render URL's `/auth/callback`), and `TOKEN_STORE_DIR`.
+- Register the Render callback URL in the Google Cloud Console OAuth client's authorized redirect URIs.
+- Provision a persistent disk or managed database (PostgreSQL) so `data/state.json` and the token store survive restarts and deploys.
+
+### Hardening checklist before public deployment
+
+- Move state from local JSON to PostgreSQL or SQLite with proper migrations.
+- Encrypt tokens at rest and restrict `TOKEN_STORE_DIR` access; consider a managed secret store instead of local files.
+- Run transfer jobs asynchronously (background worker/queue) so large copy jobs don't block requests.
+- Add rate limiting and structured logging/telemetry around OAuth and sync endpoints.
+- Review CORS, cookie, and session settings for the production domain.
