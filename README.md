@@ -191,13 +191,13 @@ See `RUNNING.md` for the same instructions in a quick-reference format.
 | Phase 3 | Authentication | Done — live Google OAuth multi-account connection flow (`drive_fusion/auth`) |
 | Phase 4 | Live indexing | Done — real Drive API metadata sync and quota reads via `drive_client.py` and `/api/.../sync` |
 | Phase 5 | Transfer workflows | Done — real Drive API copy jobs via `drive_client.copy_file_between_accounts`, per-file status, retry endpoint |
-| Phase 6 | Hardening | Planned — security review, deployment, telemetry |
+| Phase 6 | Hardening | In progress — CORS configured and transfers run async; security review, DB migration, and deployment still open |
 
 ## Next milestone: hardening and deployment
 
 Accounts can be connected with live Google OAuth, quota/file metadata can be synced from the real Drive API, and transfer jobs copy files for real between connected accounts (with per-file status, error surfacing, and a retry endpoint for failed files). The next milestone focuses on:
 
-- Background/async job execution so large transfers don't block the request
+- Done: transfer jobs run on a background thread so large transfers don't block the request; a dedicated worker/queue (Celery/RQ) is still recommended for horizontal scaling
 - Moving state from a local JSON file to PostgreSQL or SQLite
 - Security review of the token store and OAuth flow ahead of any public deployment
 - Deployment to Netlify (frontend) and Render (backend API)
