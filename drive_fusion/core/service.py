@@ -1,5 +1,6 @@
 """Core service layer shared by CLI and API."""
 import uuid
+import threading
 from typing import Optional
 
 from drive_fusion.core import drive_client
@@ -10,6 +11,7 @@ from drive_fusion.auth.token_store import load_credentials
 class DriveFusionService:
     def __init__(self):
         self.state = load_state()
+        self._lock = threading.Lock()
 
     def _persist(self):
         save_state(self.state)
@@ -72,9 +74,16 @@ class DriveFusionService:
             "results": [],
         }
         self.state["jobs"].append(job)
-        self._run_transfer_job(job)
         self._persist()
+        thread = threading.Thread(target=self._run_transfer_job_async, args=(job,), daemon=True)
+        thread.start()
         return job
+
+    def _run_transfer_job_async(self, job: dict) -> None:
+        """Run a transfer job in a background thread and persist the result."""
+        self._run_transfer_job(job)
+        with self._lock:
+            self._persist()
 
     def _run_transfer_job(self, job: dict) -> None:
         source_creds = load_credentials(job["source_account"])
@@ -124,8 +133,11 @@ class DriveFusionService:
             "results": [],
         }
         self.state["jobs"].append(retry_job_record)
-        self._run_transfer_job(retry_job_record)
         self._persist()
+        thread = threading.Thread(
+            target=self._run_transfer_job_async, args=(retry_job_record,), daemon=True
+        )
+        thread.start()
         return retry_job_record
 
     def sync_account(self, account_id: str) -> dict:
