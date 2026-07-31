@@ -58,6 +58,6 @@ Drive Fusion targets a split deployment: a static/Jinja2 frontend and a FastAPI 
 
 - Move state from local JSON to PostgreSQL or SQLite with proper migrations.
 - Encrypt tokens at rest and restrict `TOKEN_STORE_DIR` access; consider a managed secret store instead of local files.
-- Run transfer jobs asynchronously (background worker/queue) so large copy jobs don't block requests.
+- Done: transfer jobs run asynchronously on a background thread (`DriveFusionService._run_transfer_job_async`) so large copy jobs don't block requests. A dedicated worker/queue (Celery/RQ) is still recommended for horizontal scaling.
 - Add rate limiting and structured logging/telemetry around OAuth and sync endpoints.
 - Review CORS, cookie, and session settings for the production domain.
