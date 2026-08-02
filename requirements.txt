@@ -12,3 +12,4 @@ itsdangerous==2.2.0
 cryptography==43.0.3
 slowapi==0.1.9
 sqlalchemy==2.0.36
+psycopg2-binary==2.9.10
