@@ -16,7 +16,7 @@ Copy `.env.example` to `.env` and fill in your Google OAuth credentials:
 cp .env.example .env
 ```
 
-Required variables: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `TOKEN_STORE_DIR`. Create OAuth credentials in the Google Cloud Console with the Drive API enabled and the redirect URI registered. Set `ALLOWED_ORIGINS` (comma-separated) to the frontend origin(s) allowed to call this API via CORS.
+Required variables: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `TOKEN_STORE_DIR`. Create OAuth credentials in the Google Cloud Console with the Drive API enabled and the redirect URI registered. Set `ALLOWED_ORIGINS` (comma-separated) to the frontend origin(s) allowed to call this API via CORS. Optionally set `DATABASE_URL` to a PostgreSQL connection string for production; it defaults to a local SQLite file under `data/` if unset.
 
 ## CLI usage
 
@@ -59,5 +59,4 @@ Then open http://127.0.0.1:8000/ for the dashboard.
 - `GET /auth/login`, `GET /auth/callback`, `GET /auth/logout`
 
 ## Notes
-
-Account and file state is stored in local JSON state (`data/state.json`). Quota and file metadata are populated from the live Google Drive API once an account completes the OAuth flow; unauthenticated accounts return a clear error when synced. The next planned phase replaces simulated transfer jobs with real Drive API copy/move operations and background job execution.
+Account, file, and job state is persisted via SQLAlchemy (`drive_fusion/core/db.py`), using SQLite by default or PostgreSQL when `DATABASE_URL` is set; a legacy `data/state.json` file is migrated in automatically on first run if present. Quota and file metadata are populated from the live Google Drive API once an account completes the OAuth flow; unauthenticated accounts return a clear error when synced. The next planned phase replaces simulated transfer jobs with real Drive API copy/move operations and background job execution.
