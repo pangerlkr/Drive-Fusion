@@ -50,14 +50,13 @@ Drive Fusion targets a split deployment: a static/Jinja2 frontend and a FastAPI 
 ### Backend (Render)
 
 - Deploy `drive_fusion.api.app:app` as a Render Web Service running `uvicorn drive_fusion.api.app:app --host 0.0.0.0 --port $PORT`.
-- Set required environment variables in the Render dashboard: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` (pointing at the Render URL's `/auth/callback`), and `TOKEN_STORE_DIR`.
+- Set required environment variables in the Render dashboard: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` (pointing at the Render URL's `/auth/callback`), `TOKEN_STORE_DIR`, and `DATABASE_URL` (a PostgreSQL connection string; defaults to a local SQLite file if unset).
 - Register the Render callback URL in the Google Cloud Console OAuth client's authorized redirect URIs.
-- Provision a persistent disk or managed database (PostgreSQL) so `data/state.json` and the token store survive restarts and deploys.
+- Provision a managed PostgreSQL database and set `DATABASE_URL` accordingly (falls back to a local SQLite file if unset), and use a persistent disk for `TOKEN_STORE_DIR` so accounts, files, jobs, and tokens survive restarts and deploys.
 
 ### Hardening checklist before public deployment
 
-- Move state from local JSON to PostgreSQL or SQLite with proper migrations.
-- Encrypt tokens at rest and restrict `TOKEN_STORE_DIR` access; consider a managed secret store instead of local files.
+- Done: state (accounts, files, jobs) is persisted via SQLAlchemy in `drive_fusion/core/db.py` (SQLite by default, PostgreSQL via `DATABASE_URL`), with automatic one-time migration from the legacy `data/state.json` on first run.
 - Done: transfer jobs run asynchronously on a background thread (`DriveFusionService._run_transfer_job_async`) so large copy jobs don't block requests. A dedicated worker/queue (Celery/RQ) is still recommended for horizontal scaling.
 - Add rate limiting and structured logging/telemetry around OAuth and sync endpoints.
 - Review CORS, cookie, and session settings for the production domain.
