@@ -82,7 +82,7 @@ drive-fusion/
 │   │   └── routes.py       # /auth/login, /auth/callback, /auth/logout
 │   ├── core/
 │   │   ├── __init__.py
-│   │   ├── store.py        # JSON-backed state (prototype persistence)
+        ├── db.py             # SQLAlchemy models + init_db/load_state/save_state
 │   │   ├── service.py      # Shared service layer used by CLI and API
 │   │   └── drive_client.py # Google Drive API v3 wrapper (quota, file listing)
 │   └── api/
