@@ -34,7 +34,7 @@
 
 > Keywords: google drive manager, multi-account google drive, cloud storage aggregator, google drive api, fastapi dashboard, self-hosted storage manager, open source drive tool
 
-⭐ If you find this project useful, please star the repo and consider [contributing](CONTRIBUTING.md) — forks and pull requests are welcome!
+If you find this project useful, please star the repo and consider [contributing](CONTRIBUTING.md) — forks and pull requests are welcome!
 
 Drive Fusion is a workspace for users who manage multiple Google accounts and want one operational layer for Google Drive. It does not combine Google storage quotas at the platform level; instead, it provides a federated layer that connects several authorized accounts, aggregates visibility, and makes browsing, searching, reporting, and transfer planning easier in one interface.[1][2]
 
