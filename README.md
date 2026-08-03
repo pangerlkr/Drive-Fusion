@@ -1,6 +1,6 @@
 # Drive Fusion
 
-[![License](https://img.shields.io/github/license/pangerlkr/Drive-Fusion)](LICENSE) [![Stars](https://img.shields.io/github/stars/pangerlkr/Drive-Fusion?style=social)](https://github.com/pangerlkr/Drive-Fusion/stargazers) [![Docker Image](https://img.shields.io/github/actions/workflow/status/pangerlkr/Drive-Fusion/docker-publish.yml?label=docker%20build)](https://github.com/pangerlkr/Drive-Fusion/actions) [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![LICENSE](https://img.shields.io/github/license/pangerlkr/Drive-Fusion)](LICENSE) [![Stars](https://img.shields.io/github/stars/pangerlkr/Drive-Fusion?style=social)](https://github.com/pangerlkr/Drive-Fusion/stargazers) [![Docker Image](https://img.shields.io/github/actions/workflow/status/pangerlkr/Drive-Fusion/docker-publish.yml?label=docker%20build)](https://github.com/pangerlkr/Drive-Fusion/actions) [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 ## Sponsored by GitAds
 
