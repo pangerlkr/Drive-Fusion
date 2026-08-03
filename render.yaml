@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: drive-fusion
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: TOKEN_STORE_DIR
+        value: .tokens
+      - key: DATABASE_URL
+        sync: false
+    healthCheckPath: /api/health
