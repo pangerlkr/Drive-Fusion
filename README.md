@@ -1,5 +1,13 @@
 # Drive Fusion
 
+[![License](https://img.shields.io/github/license/pangerlkr/Drive-Fusion)](LICENSE) [![Stars](https://img.shields.io/github/stars/pangerlkr/Drive-Fusion?style=social)](https://github.com/pangerlkr/Drive-Fusion/stargazers) [![Docker Image](https://img.shields.io/github/actions/workflow/status/pangerlkr/Drive-Fusion/docker-publish.yml?label=docker%20build)](https://github.com/pangerlkr/Drive-Fusion/actions) [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+**Drive Fusion** is an open-source **Google Drive storage aggregator and multi-account manager**. It unifies multiple Google Drive accounts into a single dashboard for file search, cross-account transfers, and real-time storage usage tracking — built with **Python, FastAPI, and SQLAlchemy**.
+
+> Keywords: google drive manager, multi-account google drive, cloud storage aggregator, google drive api, fastapi dashboard, self-hosted storage manager, open source drive tool
+
+⭐ If you find this project useful, please star the repo and consider [contributing](CONTRIBUTING.md) — forks and pull requests are welcome!
+
 Drive Fusion is a workspace for users who manage multiple Google accounts and want one operational layer for Google Drive. It does not combine Google storage quotas at the platform level; instead, it provides a federated layer that connects several authorized accounts, aggregates visibility, and makes browsing, searching, reporting, and transfer planning easier in one interface.[1][2]
 
 The project now ships as a **functional prototype** with live Google OAuth and Drive API integration:
