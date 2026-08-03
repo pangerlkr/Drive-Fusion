@@ -26,6 +26,8 @@
   </em>
 </p>
 
+---
+
 ## About
 
 **Drive Fusion** is an open-source **Google Drive storage aggregator and multi-account manager**. It unifies multiple Google Drive accounts into a single dashboard for file search, cross-account transfers, and real-time storage usage tracking — built with **Python, FastAPI, and SQLAlchemy**.
@@ -128,13 +130,52 @@ drive-fusion/
 
 ### 1. Clone and set up a virtual environment
 
+## Installation
+
+### Step 1: Clone the repository
+
 ```bash
 git clone https://github.com/pangerlkr/Drive-Fusion
+```
+
+### Step 2: Navigate to the project directory
+
+```bash
 cd Drive-Fusion
+```
+
+### Step 3: Create a virtual environment
+
+```bash
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+```
+
+### Step 4: Activate the virtual environment
+
+**macOS/Linux**
+
+```bash
+source .venv/bin/activate
+```
+
+**Windows (Command Prompt)**
+
+```cmd
+.venv\Scripts\activate
+```
+
+**Windows (PowerShell)**
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+### Step 5: Install the required dependencies
+
+```bash
 pip install -r requirements.txt
 ```
+---
 
 ### 2. Configure Google OAuth
 
