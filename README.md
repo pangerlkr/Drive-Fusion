@@ -2,7 +2,6 @@
 
 [![License](https://img.shields.io/github/license/pangerlkr/Drive-Fusion)](LICENSE) [![Stars](https://img.shields.io/github/stars/pangerlkr/Drive-Fusion?style=social)](https://github.com/pangerlkr/Drive-Fusion/stargazers) [![Docker Image](https://img.shields.io/github/actions/workflow/status/pangerlkr/Drive-Fusion/docker-publish.yml?label=docker%20build)](https://github.com/pangerlkr/Drive-Fusion/actions) [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
---
 ## Sponsored by GitAds
 
 <p align="center">
@@ -47,19 +46,14 @@ The project now ships as a **functional prototype** with live Google OAuth and D
 
 Both the CLI and the GUI call the same core service, so behavior stays consistent across interfaces.
 
---
 
 ## Problem statement
 
 Each Google Account includes up to 15 GB of storage shared across Gmail, Google Drive, and Google Photos, which means users often end up splitting content across multiple accounts when they outgrow a single free allocation.[2] Google Drive API based apps can authenticate users with OAuth and work with file metadata, listing, and transfers, which makes a unified management layer technically feasible.[1][3]
 
---
-
 ## Product goal
 
 The goal is to create a professional workspace that lets a user connect multiple Google accounts, inspect quota usage, index files across those accounts, and run user-approved transfer workflows without constant account switching.[1][2]
-
---
 
 ## Core concept
 
@@ -70,8 +64,6 @@ The goal is to create a professional workspace that lets a user connect multiple
 | Unified index | Search files across accounts | Normalizes metadata into one searchable catalog.[1][4] |
 | Transfer engine | Copy files between accounts | Runs queued jobs with retry and progress handling. |
 | Export center | Produce reports | Generates CSV and Markdown workspace reports. |
-
---
 
 ## Functional scope
 
