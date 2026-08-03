@@ -25,7 +25,6 @@
     ensuring that cloud storage drives remain open, secure, and free.
   </em>
 </p>
---
 
 ## About
 
