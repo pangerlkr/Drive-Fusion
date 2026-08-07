@@ -92,6 +92,77 @@
         {% endfor %}
       </table>
     </section>
+
+      <section class="card" id="upload-section">
+        <h2>Upload files</h2>
+        <form id="upload-form" method="post" action="/ui/upload" enctype="multipart/form-data">
+          <input name="account_id" placeholder="Target account id" required>
+          <div id="dropzone" class="dropzone">
+            <p>Drag &amp; drop files here, or click to browse</p>
+            <input type="file" id="file-input" name="files" multiple hidden>
+          </div>
+          <div id="file-preview-list" class="file-preview-list"></div>
+          <button type="submit">Upload</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>File grid</h2>
+        <div id="file-grid" class="file-grid">
+          {% for f in files %}
+          <div class="file-card" data-id="{{ f.id }}">
+            <div class="file-icon">FILE</div>
+            <div class="file-name">{{ f.name }}</div>
+            <div class="file-meta">{{ f.size_mb }} MB &middot; {{ f.account_id }}</div>
+            <form method="post" action="/ui/files/{{ f.id }}/delete">
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
   </main>
+
+    <script>
+      const dropzone = document.getElementById("dropzone");
+      const fileInput = document.getElementById("file-input");
+      const previewList = document.getElementById("file-preview-list");
+
+      function renderPreview(files) {
+        previewList.innerHTML = "";
+        Array.from(files).forEach((file) => {
+          const item = document.createElement("div");
+          item.className = "file-preview-item";
+          item.textContent = `${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+          previewList.appendChild(item);
+        });
+      }
+
+      dropzone.addEventListener("click", () => fileInput.click());
+
+      fileInput.addEventListener("change", () => renderPreview(fileInput.files));
+
+      ["dragenter", "dragover"].forEach((evt) => {
+        dropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          dropzone.classList.add("dragover");
+        });
+      });
+
+      ["dragleave", "drop"].forEach((evt) => {
+        dropzone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          dropzone.classList.remove("dragover");
+        });
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        const dt = e.dataTransfer;
+        if (dt && dt.files.length) {
+          fileInput.files = dt.files;
+          renderPreview(dt.files);
+        }
+      });
+    </script>
 </body>
 </html>
