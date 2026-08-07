@@ -243,6 +243,8 @@ To connect a real Google account, visit `/auth/login?user_id=<account_id>` (usin
 | POST | `/auth/logout` | Disconnect a user's stored Google credentials |
 | POST | `/api/accounts/{account_id}/sync` | Pull live quota + files for one account |
 | POST | `/api/sync` | Sync all connected accounts |
+| POST | `/ui/upload` | Upload one or more files to an account from the dashboard |
+| POST | `/ui/files/{file_id}/delete` | Delete a file and remove its index record 
 
 See `RUNNING.md` for the same instructions in a quick-reference format.
 
