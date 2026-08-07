@@ -193,3 +193,54 @@ class DriveFusionService:
         for j in self.state["jobs"]:
             lines.append(f"- {j['id']}: {j['source_account']} -> {j['target_account']} [{j['status']}]")
         return "\n".join(lines)
+
+    def upload_file(self, account_id: str, filename: str, content: bytes, mime_type: str = "application/octet-stream") -> dict:
+        """Upload a file (e.g. from a browser drag-and-drop) to the given account.
+
+        If the account has completed Google OAuth, the file is uploaded for
+        real via the Drive API. Otherwise it is recorded locally so the
+        prototype workflow still works without live OAuth (status: simulated
+        uploads still show up in the unified file index).
+        """
+        account = next((a for a in self.state["accounts"] if a["id"] == account_id), None)
+        if not account:
+            raise ValueError(f"Unknown account: {account_id}")
+
+        creds = load_credentials(account_id)
+        if creds:
+            uploaded = drive_client.upload_file_bytes(creds, account_id, filename, content, mime_type)
+        else:
+            uploaded = {
+                "id": f"file-{uuid.uuid4().hex[:8]}",
+                "name": filename,
+                "account_id": account_id,
+                "size_mb": round(len(content) / (1024 ** 2), 2),
+                "mime_type": mime_type,
+            }
+
+        self.state["files"].append(uploaded)
+        account["used_gb"] = round(account.get("used_gb", 0.0) + uploaded["size_mb"] / 1024, 4)
+        self._persist()
+        return uploaded
+
+    def delete_file(self, file_id: str) -> None:
+        """Delete a file from Drive (if the owning account is connected) and
+        remove it from the local unified file index.
+        """
+        file = next((f for f in self.state["files"] if f["id"] == file_id), None)
+        if not file:
+            raise ValueError(f"Unknown file: {file_id}")
+
+        creds = load_credentials(file["account_id"])
+        if creds:
+            try:
+                drive_client.delete_file(creds, file_id)
+            except Exception:
+                pass
+
+        self.state["files"] = [f for f in self.state["files"] if f["id"] != file_id]
+        account = next((a for a in self.state["accounts"] if a["id"] == file["account_id"]), None)
+        if account:
+            account["used_gb"] = max(0.0, round(account.get("used_gb", 0.0) - file.get("size_mb", 0) / 1024, 4))
+        self._persist()
+
