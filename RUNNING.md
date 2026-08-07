@@ -42,6 +42,9 @@ Then open http://127.0.0.1:8000/ for the dashboard.
 
 - Click **Connect** next to an account to start the Google OAuth flow (`/auth/login?user_id=<account_id>`).
 - Click **Sync** on an account, or **Sync all accounts**, to pull live quota and file metadata from Google Drive.
+- Under **Upload files**, drag files onto the dropzone (or click it to browse), enter the target **account id**, and click **Upload** to send them to `POST /ui/upload`.
+- Each entry in the **File grid** shows the file name, size, and owning account, with a **Delete** button that calls `POST /ui/files/{file_id}/delete` to remove it.
+- The dashboard also exposes `GET /api/files` as a lightweight JSON endpoint for building custom refresh/polling UIs.
 
 ## Authentication flow
 
@@ -59,6 +62,8 @@ Then open http://127.0.0.1:8000/ for the dashboard.
 - `GET /api/jobs`, `POST /api/jobs`
 - `POST /api/accounts/{account_id}/sync` — pull live quota + files for one account
 - `POST /api/sync` — sync every connected account
+- `POST /ui/upload` — upload one or more files to an account from the dashboard
+- `POST /ui/files/{file_id}/delete` — delete a file and its index record
 - `GET /auth/login`, `GET /auth/callback`, `GET /auth/logout`
 
 ## Notes
