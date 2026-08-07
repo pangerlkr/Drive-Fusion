@@ -2,6 +2,9 @@
 
 This repository contains a functional prototype: a shared Python core, a Typer CLI, and a FastAPI-powered GUI, with live Google OAuth and Drive API integration.
 
+
+> For a detailed, step-by-step walkthrough of connecting a Google account (OAuth consent, callback, and sync), see the [OAuth Account Connection Guide](OAUTH_ACCOUNT_CONNECT_GUIDE.md).
+
 ## Setup
 
 ```bash
