@@ -1,7 +1,7 @@
 """FastAPI backend and dashboard for Drive Fusion."""
 import os
 
-from fastapi import FastAPI, HTTPException, Request, Form
+from fastapi import FastAPI, HTTPException, Request, Form, UploadFile, File
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -147,3 +147,32 @@ def ui_sync_all():
     """Sync every connected account and return to the dashboard."""
     service.sync_all_accounts()
     return RedirectResponse(url="/", status_code=303)
+
+
+
+@app.post("/ui/upload")
+async def ui_upload_files(
+    account_id: str = Form(...),
+    files: list[UploadFile] = File(...),
+):
+    """Handle drag-and-drop / manual file uploads from the dashboard."""
+    for f in files:
+        data = await f.read()
+        service.upload_file(account_id, f.filename, data, content_type=f.content_type)
+    return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/ui/files/{file_id}/delete")
+def ui_delete_file(file_id: str):
+    """Delete a file from storage and remove its record."""
+    try:
+        service.delete_file(file_id)
+    except ValueError:
+        pass
+    return RedirectResponse(url="/", status_code=303)
+
+
+@app.get("/api/files")
+def api_list_files():
+    """JSON endpoint used by the dashboard for live file grid refreshes."""
+    return {"files": service.list_files()}
