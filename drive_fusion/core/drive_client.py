@@ -159,3 +159,44 @@ def copy_file_between_accounts(
         "size_mb": round(size_bytes / (1024 ** 2), 2),
         "mime_type": created.get("mimeType", upload_mime),
     }
+
+
+def upload_file_bytes(
+    creds: Credentials,
+    account_id: str,
+    filename: str,
+    content: bytes,
+    mime_type: str = "application/octet-stream",
+) -> dict[str, Any]:
+    """Upload raw bytes (e.g. from a browser drag-and-drop upload) as a new
+    file in the Google Drive account behind `creds`.
+
+    Returns file metadata normalized to the DriveFile shape used elsewhere
+    in the app: id, name, account_id, size_mb, mime_type.
+    """
+    import io
+    from googleapiclient.http import MediaIoBaseUpload
+
+    service = _drive_service(creds)
+    buffer = io.BytesIO(content)
+    media = MediaIoBaseUpload(buffer, mimetype=mime_type, resumable=False)
+    created = (
+        service.files()
+        .create(body={"name": filename}, media_body=media, fields="id, name, size, mimeType")
+        .execute()
+    )
+    size_bytes = float(created.get("size", 0) or 0)
+    return {
+        "id": created["id"],
+        "name": created["name"],
+        "account_id": account_id,
+        "size_mb": round(size_bytes / (1024 ** 2), 2),
+        "mime_type": created.get("mimeType", mime_type),
+    }
+
+
+def delete_file(creds: Credentials, file_id: str) -> None:
+    """Permanently delete a file from Drive (used by the dashboard's delete action)."""
+    service = _drive_service(creds)
+    service.files().delete(fileId=file_id).execute()
+
