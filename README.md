@@ -278,6 +278,12 @@ Accounts can be connected with live Google OAuth, quota/file metadata can be syn
 - Security review of the token store and OAuth flow ahead of any public deployment
 - Deployment to Netlify (frontend) and Render (backend API)
 
+## Documentation
+
+- [OAuth Account Connection Guide](OAUTH_ACCOUNT_CONNECT_GUIDE.md) — step-by-step walkthrough for connecting a Google account via OAuth, running the sync endpoint, and verifying live quota/file data.
+- [RUNNING.md](RUNNING.md) — local setup and run instructions.
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) — production deployment guide.
+
 ## Contributing
 
 See `CONTRIBUTING.md` for guidelines. See `SECURITY.md` for the security policy.
